@@ -1,45 +1,51 @@
 package com.f3pro.springboot2.service;
 
 import com.f3pro.springboot2.domain.Anime;
+import com.f3pro.springboot2.dto.AnimeDTO;
+import com.f3pro.springboot2.repository.AnimeRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Service
+@RequiredArgsConstructor
 public class AnimeService {
 
-    private static List<Anime> animes ;
-    static {
-        animes = new ArrayList<>(List.of(new Anime(1L,"aa"), new Anime(2L,"Berserk")));
-    }
-    public List<Anime> listAll(){
-        return animes;
+    private final AnimeRepository animeRepository;
 
+
+    public List<Anime> findAll() {
+        return animeRepository.findAll();
     }
 
-    public Anime findById(long id){
-        return animes.stream()
-                .filter(anime -> anime.getId().equals(id))
-                .findFirst()
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Anime not Found"));
+    public Anime findById(long id) {
+        return animeRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Anime not Found"));
     }
 
-    public Anime save(Anime anime) {
-        anime.setId(ThreadLocalRandom.current().nextLong(3,10000));
-        animes.add(anime);
-        return anime;
+    public Anime save(AnimeDTO animeDTO) {
+
+        return animeRepository.save(Anime
+                .builder().name(animeDTO.getName()).build());
+
+
     }
 
     public void delete(long id) {
-        animes.remove(findById(id));
+        animeRepository.delete(findById(id));
     }
 
-    public void replace(Anime anime) {
-        delete(anime.getId());
-        animes.add(anime);
+    public void replace(AnimeDTO animeDTO) {
+       Anime savedAnime = findById(animeDTO.getId());
+       Anime anime = Anime.builder()
+               .id(savedAnime.getId())
+               .name(animeDTO.getName())
+               .build();
+       animeRepository.save(anime);
+
+
     }
 }
