@@ -1,7 +1,8 @@
 package com.f3pro.springboot2.controller;
 
 import com.f3pro.springboot2.domain.Anime;
-import com.f3pro.springboot2.dto.AnimeDTO;
+import com.f3pro.springboot2.dto.AnimePostDTO;
+import com.f3pro.springboot2.dto.AnimePutDTO;
 import com.f3pro.springboot2.service.AnimeService;
 import com.f3pro.springboot2.util.DateUltil;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +35,17 @@ public class AnimeController {
         return ResponseEntity.ok(animeService.findById(id));
     }
 
+    @GetMapping(path = "/find")
+    public ResponseEntity<List<Anime>>findByName(@RequestParam String name){
+        return ResponseEntity.ok(animeService.findByName(name));
+    }
+
+
+
+
     @PostMapping
-    public ResponseEntity<Anime> save( @RequestBody AnimeDTO AnimeDTO){
-        return new ResponseEntity<>( animeService.save(AnimeDTO), HttpStatus.CREATED);
+    public ResponseEntity<Anime> save(@RequestBody AnimePostDTO animePostDTO ){
+        return new ResponseEntity<>( animeService.save(animePostDTO), HttpStatus.CREATED);
     }
 
     @DeleteMapping(path = "/{id}")
@@ -47,8 +56,8 @@ public class AnimeController {
     }
 
     @PutMapping
-    public ResponseEntity<Void> replace(@RequestBody AnimeDTO AnimeDTO){
-        animeService.replace(AnimeDTO);
+    public ResponseEntity<Void> replace(@RequestBody AnimePutDTO animePutDTO){
+        animeService.replace(animePutDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -1,9 +1,12 @@
 package com.f3pro.springboot2.service;
 
 import com.f3pro.springboot2.domain.Anime;
-import com.f3pro.springboot2.dto.AnimeDTO;
+import com.f3pro.springboot2.dto.AnimePostDTO;
+import com.f3pro.springboot2.dto.AnimePutDTO;
+import com.f3pro.springboot2.mapper.AnimeMapper;
 import com.f3pro.springboot2.repository.AnimeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,6 +19,11 @@ public class AnimeService {
 
     private final AnimeRepository animeRepository;
 
+    private final AnimeMapper mapper;
+
+    public List<Anime> findByName(String name) {
+        return animeRepository.findByName(name);
+    }
 
     public List<Anime> findAll() {
         return animeRepository.findAll();
@@ -26,10 +34,9 @@ public class AnimeService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Anime not Found"));
     }
 
-    public Anime save(AnimeDTO animeDTO) {
+    public Anime save(AnimePostDTO animePostDTO) {
 
-        return animeRepository.save(Anime
-                .builder().name(animeDTO.getName()).build());
+        return animeRepository.save(mapper.toAnime(animePostDTO));
 
 
     }
@@ -38,13 +45,11 @@ public class AnimeService {
         animeRepository.delete(findById(id));
     }
 
-    public void replace(AnimeDTO animeDTO) {
-       Anime savedAnime = findById(animeDTO.getId());
-       Anime anime = Anime.builder()
-               .id(savedAnime.getId())
-               .name(animeDTO.getName())
-               .build();
-       animeRepository.save(anime);
+    public void replace(AnimePutDTO animePutDTO) {
+        Anime savedAnime = findById(animePutDTO.getId());
+        Anime anime = mapper.toAnime(animePutDTO);
+        anime.setId(savedAnime.getId());
+        animeRepository.save(anime);
 
 
     }
