@@ -3,13 +3,12 @@ package com.f3pro.springboot2.service;
 import com.f3pro.springboot2.domain.Anime;
 import com.f3pro.springboot2.dto.AnimePostDTO;
 import com.f3pro.springboot2.dto.AnimePutDTO;
+import com.f3pro.springboot2.exception.BadRequestException;
 import com.f3pro.springboot2.mapper.AnimeMapper;
 import com.f3pro.springboot2.repository.AnimeRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class AnimeService {
 
     public Anime findById(long id) {
         return animeRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Anime not Found"));
+                .orElseThrow(() -> new BadRequestException("Anime not Found"));
     }
 
     public Anime save(AnimePostDTO animePostDTO) {
